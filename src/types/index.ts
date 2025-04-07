@@ -54,6 +54,6 @@ export type RevenueType = {
   month: string;
   year: number;
   totalRevenue: number;
-  toolRevenue: Record<string, number>;
-  customerRevenue: Record<string, number>;
+  revenueByTool: Record<string, number>;
+  revenueByCustomer: Record<string, number>;
 };

@@ -177,7 +177,7 @@ const Reports = () => {
                       </TableCell>
                     )}
                     <TableCell>{tool}</TableCell>
-                    <TableCell className="text-right">₹{amount}</TableCell>
+                    <TableCell className="text-right">₹{String(amount)}</TableCell>
                     <TableCell className="text-right">
                       {((Number(amount) / revenue.totalRevenue) * 100).toFixed(1)}%
                     </TableCell>
@@ -193,7 +193,7 @@ const Reports = () => {
                       </TableCell>
                     )}
                     <TableCell>{customer}</TableCell>
-                    <TableCell className="text-right">₹{amount}</TableCell>
+                    <TableCell className="text-right">₹{String(amount)}</TableCell>
                     <TableCell className="text-right">
                       {((Number(amount) / revenue.totalRevenue) * 100).toFixed(1)}%
                     </TableCell>
