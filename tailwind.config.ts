@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,7 +62,18 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
-				}
+				},
+				// Custom colors for the rental app
+				available: "#4285F4",
+				"available-light": "#E8F0FE",
+				rented: "#F29A37",
+				"rented-light": "#FEF0E1",
+				active: "#34A853",
+				"active-light": "#E6F4EA",
+				overdue: "#EA4335",
+				"overdue-light": "#FDEBE9",
+				revenue: "#F29A37",
+				"revenue-light": "#FEF0E1",
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
