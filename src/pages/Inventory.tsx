@@ -3,19 +3,32 @@ import { useState } from "react";
 import { useAppContext } from "@/context/AppContext";
 import ContentHeader from "@/components/ContentHeader";
 import { Card, CardContent } from "@/components/ui/card";
-import { Plus, FileDown, Package2, Search } from "lucide-react";
+import { Plus, FileDown, Package2, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
 import EmptyState from "@/components/EmptyState";
 import AddToolDialog from "@/components/dialogs/AddToolDialog";
 import { exportToolsToCSV } from "@/utils/csv-export";
 import { ToolType } from "@/types";
+import { useToast } from "@/hooks/use-toast";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const Inventory = () => {
-  const { tools, toolsFilter, setToolsFilter } = useAppContext();
+  const { tools, toolsFilter, setToolsFilter, deleteTool } = useAppContext();
   const [addToolDialogOpen, setAddToolDialogOpen] = useState(false);
   const [editingTool, setEditingTool] = useState<ToolType | undefined>(undefined);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [selectedTool, setSelectedTool] = useState<ToolType | null>(null);
+  const { toast } = useToast();
   
   // Filter tools based on search term
   const filteredTools = tools.filter(
@@ -29,8 +42,31 @@ const Inventory = () => {
     setAddToolDialogOpen(true);
   };
   
+  const handleDeleteClick = (tool: ToolType, event: React.MouseEvent) => {
+    event.stopPropagation(); // Prevent card click event from firing
+    setSelectedTool(tool);
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = () => {
+    if (selectedTool) {
+      deleteTool(selectedTool.id);
+      toast({
+        title: "Tool Deleted",
+        description: `${selectedTool.name} has been removed from inventory.`,
+        duration: 3000,
+      });
+    }
+    setDeleteDialogOpen(false);
+  };
+  
   const handleExportTools = () => {
     exportToolsToCSV(tools);
+    toast({
+      title: "Export Complete",
+      description: "Inventory data has been exported to CSV.",
+      duration: 3000,
+    });
   };
   
   return (
@@ -86,7 +122,7 @@ const Inventory = () => {
           {filteredTools.map((tool) => (
             <Card 
               key={tool.id} 
-              className="overflow-hidden hover:shadow-md transition-shadow"
+              className="overflow-hidden hover:shadow-md transition-shadow relative"
               onClick={() => handleEditTool(tool)}
             >
               <div className="h-40 bg-gray-100 flex items-center justify-center">
@@ -132,7 +168,30 @@ const Inventory = () => {
                 </div>
                 
                 <div className="mt-2 pt-2 border-t">
-                  <p className="text-lg font-bold text-revenue">₹{tool.ratePerDay}<span className="text-sm font-normal text-gray-500">/day</span></p>
+                  <div className="flex justify-between items-center">
+                    <p className="text-lg font-bold text-revenue">₹{tool.ratePerDay}<span className="text-sm font-normal text-gray-500">/day</span></p>
+                    <div className="flex gap-2">
+                      <Button 
+                        size="icon" 
+                        variant="ghost" 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEditTool(tool);
+                        }}
+                        className="h-8 w-8"
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button 
+                        size="icon" 
+                        variant="ghost" 
+                        onClick={(e) => handleDeleteClick(tool, e)}
+                        className="h-8 w-8 text-destructive hover:text-destructive/90 hover:bg-destructive/10"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -145,6 +204,37 @@ const Inventory = () => {
         onClose={() => setAddToolDialogOpen(false)}
         editingTool={editingTool}
       />
+
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Tool</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete{" "}
+              <span className="font-medium">
+                {selectedTool?.name}
+              </span>?
+              {selectedTool && selectedTool.totalQuantity !== selectedTool.availableQuantity && (
+                <p className="mt-2 text-red-500">
+                  Warning: {selectedTool.totalQuantity - selectedTool.availableQuantity} units of this tool are currently rented out.
+                </p>
+              )}
+              <p className="mt-2">
+                This action cannot be undone.
+              </p>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={confirmDelete} 
+              className="bg-destructive hover:bg-destructive/90"
+            >
+              Yes, Delete Tool
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
