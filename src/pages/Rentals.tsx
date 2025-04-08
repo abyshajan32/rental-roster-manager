@@ -20,7 +20,7 @@ import {
 import { exportRentalsToCSV } from "@/utils/csv-export";
 import { useToast } from "@/hooks/use-toast";
 import { RentalCard } from "@/components/rentals/RentalCard";
-import { RentalsFilters } from "@/components/rentals/RentalsFilters";
+import { ColumnVisibility, RentalsFilters } from "@/components/rentals/RentalsFilters";
 import { getDaysOverdue } from "@/utils/date-utils";
 
 const Rentals = () => {
@@ -35,7 +35,13 @@ const Rentals = () => {
   const [returnDialogOpen, setReturnDialogOpen] = useState(false);
   const [selectedRental, setSelectedRental] = useState<RentalType | null>(null);
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
-  const [showRateColumn, setShowRateColumn] = useState(true);
+  const [columnVisibility, setColumnVisibility] = useState<ColumnVisibility>({
+    rate: true,
+    startDate: true,
+    returnDate: true,
+    customer: true,
+    quantity: true
+  });
   const { toast } = useToast();
   
   // Filter rentals based on search term and status
@@ -68,10 +74,14 @@ const Rentals = () => {
   };
 
   const toggleRateColumn = () => {
-    setShowRateColumn(!showRateColumn);
+    setColumnVisibility({
+      ...columnVisibility,
+      rate: !columnVisibility.rate
+    });
+    
     toast({
-      title: showRateColumn ? "Rate column hidden" : "Rate column visible",
-      description: showRateColumn ? "The rate column has been hidden from view." : "The rate column is now visible.",
+      title: columnVisibility.rate ? "Rate column hidden" : "Rate column visible",
+      description: columnVisibility.rate ? "The rate column has been hidden from view." : "The rate column is now visible.",
       duration: 3000,
     });
   };
@@ -93,9 +103,11 @@ const Rentals = () => {
         <RentalsFilters 
           statusFilter={statusFilter}
           setStatusFilter={setStatusFilter}
-          showRateColumn={showRateColumn}
+          showRateColumn={columnVisibility.rate}
           toggleRateColumn={toggleRateColumn}
           handleExportRentals={handleExportRentals}
+          columnVisibility={columnVisibility}
+          setColumnVisibility={setColumnVisibility}
         />
       </ContentHeader>
       
@@ -123,7 +135,7 @@ const Rentals = () => {
             <RentalCard 
               key={rental.id}
               rental={rental} 
-              showRateColumn={showRateColumn} 
+              columnVisibility={columnVisibility} 
               onReturn={handleReturn}
             />
           ))}

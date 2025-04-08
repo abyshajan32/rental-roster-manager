@@ -5,14 +5,15 @@ import { RentalStatusBadge } from "./RentalStatusBadge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { formatDate, getDaysRemaining, getDaysOverdue } from "@/utils/date-utils";
+import { ColumnVisibility } from "./RentalsFilters";
 
 interface RentalCardProps {
   rental: RentalType;
-  showRateColumn: boolean;
+  columnVisibility: ColumnVisibility;
   onReturn: (rental: RentalType) => void;
 }
 
-export const RentalCard = ({ rental, showRateColumn, onReturn }: RentalCardProps) => {
+export const RentalCard = ({ rental, columnVisibility, onReturn }: RentalCardProps) => {
   return (
     <Card 
       key={rental.id} 
@@ -32,44 +33,55 @@ export const RentalCard = ({ rental, showRateColumn, onReturn }: RentalCardProps
             
             <div className="flex items-center gap-1 mb-1">
               <Package2 className="h-4 w-4 text-gray-400" />
-              <p><span className="font-medium">Tool:</span> {rental.toolName} (x{rental.quantity})</p>
+              <p>
+                <span className="font-medium">Tool:</span> {rental.toolName}
+                {columnVisibility.quantity && (
+                  <span> (x{rental.quantity})</span>
+                )}
+              </p>
             </div>
             
-            <div className="flex items-center gap-1">
-              <User className="h-4 w-4 text-gray-400" />
-              <p><span className="font-medium">Customer:</span> {rental.customerName}</p>
-            </div>
+            {columnVisibility.customer && (
+              <div className="flex items-center gap-1">
+                <User className="h-4 w-4 text-gray-400" />
+                <p><span className="font-medium">Customer:</span> {rental.customerName}</p>
+              </div>
+            )}
           </div>
           
           <div className="flex flex-col md:flex-row gap-4 md:gap-6">
             <div className="flex gap-4">
-              <div className="text-center">
-                <div className="flex items-center justify-center gap-1 text-blue-500 mb-1">
-                  <Calendar className="h-4 w-4" />
-                  <p className="text-xs font-medium">Start Date</p>
+              {columnVisibility.startDate && (
+                <div className="text-center">
+                  <div className="flex items-center justify-center gap-1 text-blue-500 mb-1">
+                    <Calendar className="h-4 w-4" />
+                    <p className="text-xs font-medium">Start Date</p>
+                  </div>
+                  <p className="font-medium">{formatDate(rental.startDate)}</p>
                 </div>
-                <p className="font-medium">{formatDate(rental.startDate)}</p>
-              </div>
+              )}
               
-              <div className="text-center">
-                <div 
-                  className={`flex items-center justify-center gap-1 
-                  ${rental.status === 'overdue' ? 'text-overdue' : 'text-orange-500'} mb-1`}
-                >
-                  <Calendar className="h-4 w-4" />
-                  <p className="text-xs font-medium">
-                    {rental.status === 'returned' ? 'Returned On' : 'Expected Return'}
+              {columnVisibility.returnDate && (
+                <div className="text-center">
+                  <div 
+                    className={`flex items-center justify-center gap-1 
+                    ${rental.status === 'overdue' ? 'text-overdue' : 'text-orange-500'} mb-1`}
+                  >
+                    <Calendar className="h-4 w-4" />
+                    <p className="text-xs font-medium">
+                      {rental.status === 'returned' ? 'Returned On' : 'Expected Return'}
+                    </p>
+                  </div>
+                  <p className="font-medium">
+                    {rental.status === 'returned' && rental.actualReturnDate 
+                      ? formatDate(rental.actualReturnDate)
+                      : formatDate(rental.expectedReturnDate)}
                   </p>
                 </div>
-                <p className="font-medium">
-                  {rental.status === 'returned' && rental.actualReturnDate 
-                    ? formatDate(rental.actualReturnDate)
-                    : formatDate(rental.expectedReturnDate)}
-                </p>
-              </div>
+              )}
             </div>
             
-            {showRateColumn && (
+            {columnVisibility.rate && (
               <div className="flex flex-col mt-4 md:mt-0">
                 <div className="flex items-center justify-center gap-1 text-revenue mb-1">
                   <IndianRupee className="h-4 w-4" />
