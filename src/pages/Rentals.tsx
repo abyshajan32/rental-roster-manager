@@ -28,7 +28,8 @@ const Rentals = () => {
     rentals, 
     rentalsFilter, 
     setRentalsFilter, 
-    markRentalAsReturned
+    markRentalAsReturned,
+    deleteRental
   } = useAppContext();
   
   const [addRentalDialogOpen, setAddRentalDialogOpen] = useState(false);
@@ -67,6 +68,15 @@ const Rentals = () => {
       markRentalAsReturned(selectedRental.id);
     }
     setReturnDialogOpen(false);
+  };
+
+  const handleDelete = (rental: RentalType) => {
+    deleteRental(rental.id);
+    toast({
+      title: "Rental Deleted",
+      description: `Rental for ${rental.toolName} has been deleted.`,
+      duration: 3000,
+    });
   };
   
   const handleExportRentals = () => {
@@ -137,6 +147,7 @@ const Rentals = () => {
               rental={rental} 
               columnVisibility={columnVisibility} 
               onReturn={handleReturn}
+              onDelete={handleDelete}
             />
           ))}
         </div>
