@@ -12,7 +12,8 @@ import {
   IndianRupee,
   CheckCircle,
   Search,
-  Filter
+  Filter,
+  ColumnsIcon
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -39,6 +40,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useToast } from "@/hooks/use-toast";
 
 const Rentals = () => {
   const { 
@@ -53,6 +55,8 @@ const Rentals = () => {
   const [returnDialogOpen, setReturnDialogOpen] = useState(false);
   const [selectedRental, setSelectedRental] = useState<RentalType | null>(null);
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
+  const [showRateColumn, setShowRateColumn] = useState(true);
+  const { toast } = useToast();
   
   // Filter rentals based on search term and status
   const filteredRentals = rentals.filter(
@@ -81,6 +85,15 @@ const Rentals = () => {
   
   const handleExportRentals = () => {
     exportRentalsToCSV(rentals);
+  };
+
+  const toggleRateColumn = () => {
+    setShowRateColumn(!showRateColumn);
+    toast({
+      title: showRateColumn ? "Rate column hidden" : "Rate column visible",
+      description: showRateColumn ? "The rate column has been hidden from view." : "The rate column is now visible.",
+      duration: 3000,
+    });
   };
   
   const statusStyles = {
@@ -155,6 +168,15 @@ const Rentals = () => {
           </Button>
           
           <div className="flex-grow"></div>
+          
+          <Button
+            variant="outline"
+            className="flex items-center gap-2"
+            onClick={toggleRateColumn}
+          >
+            <ColumnsIcon className="h-4 w-4" />
+            <span>{showRateColumn ? "Hide Rate" : "Show Rate"}</span>
+          </Button>
           
           <Button
             variant="outline"
@@ -248,15 +270,17 @@ const Rentals = () => {
                         </div>
                       </div>
                       
-                      <div className="flex flex-col mt-4 md:mt-0">
-                        <div className="flex items-center justify-center gap-1 text-revenue mb-1">
-                          <IndianRupee className="h-4 w-4" />
-                          <p className="text-xs font-medium">Rate</p>
+                      {showRateColumn && (
+                        <div className="flex flex-col mt-4 md:mt-0">
+                          <div className="flex items-center justify-center gap-1 text-revenue mb-1">
+                            <IndianRupee className="h-4 w-4" />
+                            <p className="text-xs font-medium">Rate</p>
+                          </div>
+                          <p className="font-medium text-center">
+                            ₹{rental.ratePerDay * rental.quantity}<span className="text-xs text-gray-500">/day</span>
+                          </p>
                         </div>
-                        <p className="font-medium text-center">
-                          ₹{rental.ratePerDay * rental.quantity}<span className="text-xs text-gray-500">/day</span>
-                        </p>
-                      </div>
+                      )}
                       
                       {(rental.status === 'active' || rental.status === 'overdue') && (
                         <div className="flex items-center mt-4 md:mt-0">
