@@ -9,30 +9,7 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      "SR INVENTORY": {
-        Row: {
-          rental_rate_per_day: number | null
-          stock_quantity: number | null
-          tool_code: string | null
-          tool_description: string | null
-          tool_id: number
-        }
-        Insert: {
-          rental_rate_per_day?: number | null
-          stock_quantity?: number | null
-          tool_code?: string | null
-          tool_description?: string | null
-          tool_id: number
-        }
-        Update: {
-          rental_rate_per_day?: number | null
-          stock_quantity?: number | null
-          tool_code?: string | null
-          tool_description?: string | null
-          tool_id?: number
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Views: {
       [_ in never]: never
