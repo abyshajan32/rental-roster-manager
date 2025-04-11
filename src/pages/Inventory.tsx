@@ -61,6 +61,15 @@ const Inventory = () => {
   };
   
   const handleExportTools = () => {
+    if (tools.length === 0) {
+      toast({
+        title: "No tools to export",
+        description: "Add some tools to your inventory first.",
+        duration: 3000,
+      });
+      return;
+    }
+    
     exportToolsToCSV(tools);
     toast({
       title: "Export Complete",
@@ -98,7 +107,7 @@ const Inventory = () => {
       
       {filteredTools.length === 0 ? (
         <EmptyState
-          title="No tools found"
+          title={toolsFilter ? "No tools found" : "Your inventory is empty"}
           description={
             toolsFilter
               ? "No tools match your search criteria. Try a different search term."
@@ -113,7 +122,7 @@ const Inventory = () => {
               }}
             >
               <Plus className="h-4 w-4 mr-2" />
-              Add Tool
+              Add First Tool
             </Button>
           }
         />
