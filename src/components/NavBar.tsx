@@ -1,10 +1,12 @@
 
 import { FC } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Home, Package2, Users, BarChart } from "lucide-react";
+import { Home, Package2, Users, BarChart, LogOut } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 
 const NavBar: FC = () => {
   const location = useLocation();
+  const { logout, user } = useAuth();
   
   const navItems = [
     {
@@ -48,6 +50,14 @@ const NavBar: FC = () => {
           </Link>
         );
       })}
+      <button
+        onClick={logout}
+        className="flex flex-col items-center p-2 rounded-lg transition-colors text-gray-500 hover:text-red-500"
+        aria-label="Logout"
+      >
+        <LogOut className="h-6 w-6" />
+        <span className="text-xs mt-1">Logout</span>
+      </button>
     </div>
   );
 };
