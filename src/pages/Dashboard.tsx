@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useAppContext } from "@/context/AppContext";
 import StatsCard from "@/components/StatsCard";
@@ -27,17 +26,11 @@ import {
 } from "@/components/ui/table";
 import { formatDate } from "@/utils/date-utils";
 import {
-  LineChart,
-  Line,
   BarChart,
   Bar,
-  PieChart,
-  Pie,
-  Cell,
   XAxis,
   YAxis,
   Tooltip,
-  Legend,
   ResponsiveContainer,
 } from "recharts";
 import { Badge } from "@/components/ui/badge";
@@ -53,15 +46,6 @@ const Dashboard = () => {
   // Active and overdue rentals for today's activity
   const activeRentals = rentals.filter(rental => rental.status === "active");
   const overdueRentals = rentals.filter(rental => rental.status === "overdue");
-  
-  // Tool distribution data for pie chart
-  const toolDistributionData = tools.map(tool => ({
-    name: tool.name,
-    value: tool.totalQuantity,
-  }));
-  
-  // Colors for charts
-  const COLORS = ["#4285F4", "#F29A37", "#34A853", "#EA4335", "#8E24AA", "#0097A7"];
   
   const openImportDialog = (type: "tools" | "rentals" | "customers" | "workers") => {
     setImportType(type);
@@ -134,41 +118,7 @@ const Dashboard = () => {
         </CardContent>
       </Card>
       
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-8">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg">Tool Distribution</CardTitle>
-          </CardHeader>
-          <CardContent className="px-2">
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={toolDistributionData}
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={80}
-                    fill="#8884d8"
-                    dataKey="value"
-                    label={({ name, percent }) =>
-                      `${name}: ${(percent * 100).toFixed(0)}%`
-                    }
-                  >
-                    {toolDistributionData.map((entry, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={COLORS[index % COLORS.length]}
-                      />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                  <Legend />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
-        
+      <div className="grid grid-cols-1 gap-4 mb-8">
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-lg">Revenue Trend</CardTitle>
